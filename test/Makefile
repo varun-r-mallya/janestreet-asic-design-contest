@@ -39,5 +39,18 @@ TOPLEVEL = tb
 # List test modules to run, separated by commas and without the .py suffix:
 COCOTB_TEST_MODULES = test
 
+# Python venv for cocotb, managed via uv (see requirements.txt). Bootstrapped
+# automatically on first run so `make -B` works without manual activation.
+VENV_DIR := .venv
+VENV_PYTHON_VERSION := 3.12
+
+ifeq ($(wildcard $(VENV_DIR)/bin/cocotb-config),)
+$(info Setting up Python venv in $(VENV_DIR) with uv...)
+$(shell uv venv --python $(VENV_PYTHON_VERSION) $(VENV_DIR) >&2)
+$(shell uv pip install --python $(VENV_DIR) -r requirements.txt >&2)
+endif
+
+export PATH := $(CURDIR)/$(VENV_DIR)/bin:$(PATH)
+
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim

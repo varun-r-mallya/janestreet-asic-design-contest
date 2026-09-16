@@ -1,6 +1,43 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
+# Jane Street ASIC design contest - protocol emulator
+
+The design is written in [Hardcaml](https://github.com/janestreet/hardcaml) and
+the verilog Tiny Tapeout hardens is generated from it:
+
+```
+hardcaml/lib/*.ml --> dune exec bin/generate.exe --> src/tt_um_uart_tx.v --> cocotb + LibreLane -> GDS
+```
+
+| path | what it is |
+| --- | --- |
+| `hardcaml/lib/uart_tx.ml` | the UART transmitter (8N1), parameterised by clock frequency and baud rate |
+| `hardcaml/lib/tt_top.ml` | the Tiny Tapeout top level: pin mapping, `rst_n` -> clear, `ena` gating |
+| `hardcaml/bin/generate.ml` | writes `src/tt_um_uart_tx.v`, including the `tt_um_*` top level itself |
+| `hardcaml/test/` | cyclesim tests that decode the tx pin and print ASCII waveforms |
+| `src/tt_um_uart_tx.v` | **generated, do not edit** - checked in so the ASIC flow needs no OCaml |
+| `test/` | cocotb tests, run against the generated RTL and the gate level netlist |
+
+### Working on it
+
+```bash
+make rtl         # regenerate src/tt_um_uart_tx.v from hardcaml/
+make rtl-check   # fail if the checked in verilog is stale
+make hardcaml    # hardcaml simulation tests
+make sim         # cocotb tests against the generated verilog
+make test        # all of the above
+```
+
+Retargeting the baud rate or clock is a generator flag, not an RTL edit:
+
+```bash
+make rtl CLOCK_HZ=10000000 BAUD=115200
+```
+
+Requires an OCaml switch with `hardcaml` (`opam install hardcaml
+hardcaml_waveterm`); building the GDS does not.
+
+## Tiny Tapeout template
 
 - [Read the documentation for project](docs/info.md)
 

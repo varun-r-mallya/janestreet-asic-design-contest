@@ -1,0 +1,5 @@
+(executable
+ (name generate)
+ (libraries core core_unix.command_unix hardcaml jane_rope tt_protocol_emulator)
+ (preprocess
+  (pps ppx_jane)))

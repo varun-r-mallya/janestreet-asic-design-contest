@@ -1,0 +1,5 @@
+(test
+ (name test_uart_tx)
+ (libraries core hardcaml hardcaml_waveterm tt_protocol_emulator)
+ (preprocess
+  (pps ppx_jane ppx_hardcaml)))

@@ -15,3 +15,9 @@ test/.venv
 
 # hardcaml build artifacts
 hardcaml/_build
+
+# local synthesis / formal scratch
+synth/pdk
+synth/area.txt
+formal/build
+formal/uart_tx

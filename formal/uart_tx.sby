@@ -1,0 +1,18 @@
+[options]
+# Bounded proof from reset, deep enough to contain a whole 10 bit frame plus
+# slack. `mode prove` (k-induction) additionally needs invariants relating the
+# design's counter to the reference model - worth doing, not done yet.
+mode bmc
+depth 60
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal uart_tx_small.v
+read -formal uart_tx_formal.sv
+prep -top uart_tx_formal
+
+[files]
+build/uart_tx_small.v
+uart_tx_formal.sv

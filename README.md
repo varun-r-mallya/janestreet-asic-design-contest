@@ -18,6 +18,10 @@ hardcaml/lib/*.ml --> dune exec bin/generate.exe --> src/tt_um_uart_tx.v --> coc
 | `src/tt_um_uart_tx.v` | **generated, do not edit** - checked in so the ASIC flow needs no OCaml |
 | `test/` | cocotb tests, run against the generated RTL and the gate level netlist |
 
+Notes: [`verification.md`](verification.md) (what is proved and how),
+[`area.md`](area.md) (measured cell costs and the levers that matter),
+[`research.md`](research.md) (prior art and papers).
+
 ### Working on it
 
 ```bash
@@ -26,6 +30,8 @@ make rtl-check   # fail if the checked in verilog is stale
 make hardcaml    # hardcaml simulation tests
 make sim         # cocotb tests against the generated verilog
 make test        # all of the above
+make formal      # bounded proof of the tx timing contract (docker)
+make area        # mapped cell count and area on sg13g2 (docker)
 ```
 
 Retargeting the baud rate or clock is a generator flag, not an RTL edit:

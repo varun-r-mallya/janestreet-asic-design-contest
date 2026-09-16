@@ -12,14 +12,31 @@ Pinout (see info.yaml):
     uo_out[1]   busy
 """
 
+import re
+from pathlib import Path
+
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, RisingEdge
 
-# Must match the config the RTL was generated with (see the header of
-# src/tt_um_uart_tx.v): 50MHz / 115200 baud.
-CLOCK_PERIOD_NS = 20
-CYCLES_PER_BIT = 434
+RTL = Path(__file__).parent.parent / "src" / "tt_um_uart_tx.v"
+
+
+def design_parameters():
+    """Read the clock/baud the RTL was generated with out of its header.
+
+    The generator stamps them into src/tt_um_uart_tx.v, so `make rtl
+    CLOCK_HZ=... BAUD=...` retargets the design and these tests together
+    instead of leaving a hardcoded constant here to rot.
+    """
+    header = RTL.read_text()[:1000]
+    match = re.search(r"clock = (\d+)Hz, baud = (\d+), cycles/bit = (\d+)", header)
+    assert match, f"could not read the generated header of {RTL}"
+    clock_hz, _baud, cycles_per_bit = (int(g) for g in match.groups())
+    return round(1e9 / clock_hz), cycles_per_bit
+
+
+CLOCK_PERIOD_NS, CYCLES_PER_BIT = design_parameters()
 
 
 def tx(dut):
